@@ -49,7 +49,7 @@ cast.games.superterran.SuperterranGame = function(gameManager) {
    * AVAILABLE)
    * @public {boolean}
    */
-  this.randomAiEnabled = false;
+  this.randomAiEnabled = true;
 
   /** @private {number} */
   this.canvasWidth_ = window.innerWidth;
@@ -518,6 +518,7 @@ cast.games.superterran.SuperterranGame.prototype.onPlayerMessage_ =
 
     var x = -1;
     var y = -1;
+    console.log("move=" + move);
     if (this.isUp_(move)) {
       y = 1;
     } else if (this.isUpRight_(move)) {
@@ -539,7 +540,8 @@ cast.games.superterran.SuperterranGame.prototype.onPlayerMessage_ =
       y = 1;
       x = 0;
     }
-
+    console.log("x=" +x);
+    console.log("y=" +y);
     // The position is calculated with the ship sprite's dimensions taken into
     // account so the ship will not be rendered out of canvas bounds.
     // Note: Sprites are rendered with the center of the sprite at the desired
