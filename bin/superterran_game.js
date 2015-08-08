@@ -49,7 +49,7 @@ cast.games.superterran.SuperterranGame = function(gameManager) {
    * AVAILABLE)
    * @public {boolean}
    */
-  this.randomAiEnabled = false;
+  this.randomAiEnabled = true;
 
   /** @private {number} */
   this.canvasWidth_ = window.innerWidth;
@@ -509,11 +509,11 @@ cast.games.superterran.SuperterranGame.prototype.onPlayerMessage_ =
   }
 
   if (fire) {
-    this.fireBullet_(playerSprite);
-    if (this.fireThisFrame_) {
-      console.log(this.MULTIPLE_FIRE_MESSAGES_ERROR_ + Date.now());
-    }
-    this.fireThisFrame_ = true;
+    // this.fireBullet_(playerSprite);
+    // if (this.fireThisFrame_) {
+    //   console.log(this.MULTIPLE_FIRE_MESSAGES_ERROR_ + Date.now());
+    // }
+    // this.fireThisFrame_ = true;
   } else {
 
     var x = -1;
@@ -545,7 +545,6 @@ cast.games.superterran.SuperterranGame.prototype.onPlayerMessage_ =
     // location hence the texture height / 2 compensation.
     var spriteVerticalRange = this.canvasHeight_ - playerSprite.texture.height;
     var spriteHorizontalRange = this.canvasWidth_ - playerSprite.texture.width;
-    alert(move +":" +y);
     if (y >= 0) {
       playerSprite.position.y = (y * spriteVerticalRange) +
           playerSprite.texture.height / 2;
@@ -592,7 +591,13 @@ cast.games.superterran.SuperterranGame.prototype.updateEnemy_ = function() {
         enemy.visible = false;
         enemy.position.x = -(enemy.texture.width +
                 this.DISPLAY_BORDER_BUFFER_WIDTH_);
-        player.mass = player.mass +1;
+        playerIndex = ":"+this.loopIterator_[1];
+        playerData = this.gameManager_.getPlayer(playerIndex)["playerData"];
+        if (!playerData) {
+          playerData = {"mass" : 0};
+        }
+        playerData["mass"] += 1;
+        this.gameManager_.updatePlayerData(playerIndex, playerData);
         return;
       }
     }
