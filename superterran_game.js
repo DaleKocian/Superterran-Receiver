@@ -137,7 +137,7 @@ cast.games.superterran.SuperterranGame = function(gameManager) {
   /** @private {!PIXI.loaders.Loader} */
   this.loader_ = new PIXI.loaders.Loader();
   this.loader_.add('assets/background.jpg');
-  this.loader_.add('assets/player.png');
+  this.loader_.add('assets/pluto.png');
   this.loader_.add('assets/enemy.png');
   this.loader_.add('assets/explosion.json');
   this.loader_.add('assets/explosion.png');
@@ -287,7 +287,7 @@ cast.games.superterran.SuperterranGame.prototype.onAssetsLoaded_ = function() {
   this.container_.addChild(this.backgroundSprite_);
 
   for (var i = 0; i < this.MAX_PLAYERS_; i++) {
-    var player = PIXI.Sprite.fromImage('assets/player.png');
+    var player = PIXI.Sprite.fromImage('assets/pluto.png');
     player.anchor.x = 0.5;
     player.anchor.y = 0.5;
     player.position.x = 60;
