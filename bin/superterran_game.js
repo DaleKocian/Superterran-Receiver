@@ -518,28 +518,28 @@ cast.games.superterran.SuperterranGame.prototype.onPlayerMessage_ =
     this.fireThisFrame_ = true;
   } else {
 
-    var x = -1;
-    var y = -1;
+    var x = 0;
+    var y = 0;
     if (this.isUp_(move)) {
-      y = 0;
+      y = 1;
     } else if (this.isUpRight_(move)) {
-      x = 0;
-      y = 0;
+      x = 1;
+      y = 1;
     }  else if (this.isRight_(move)) {
-      x = 0;
+      x = 1;
     } else if (this.isDownRight_(move)) {
-      x = 0;
-      y = 1;
+      x = 1;
+      y = -1;
     } else if (this.isDown_(move)) {
-      y = 1;
+      y = -1;
     } else if (this.isDownLeft_(move)) {
-      x = 1;
-      y = 1;
+      x = -1;
+      y = -1;
     } else if (this.isLeft_(move)) {
-      x = 1;
+      x = -1;
     } else if (this.isUpLeft_(move)) {
-      y = 0;
-      x = 1;
+      y = 1;
+      x = -1;
     }
     // The position is calculated with the ship sprite's dimensions taken into
     // account so the ship will not be rendered out of canvas bounds.
@@ -547,13 +547,11 @@ cast.games.superterran.SuperterranGame.prototype.onPlayerMessage_ =
     // location hence the texture height / 2 compensation.
     var spriteVerticalRange = this.canvasHeight_ - playerSprite.texture.height;
     var spriteHorizontalRange = this.canvasWidth_ - playerSprite.texture.width;
-    if (y >= 0) {
-      playerSprite.position.y = (y * spriteVerticalRange) +
-          playerSprite.texture.height / 2;
+    if (y != 0) {
+      playerSprite.position.y += y * (playerSprite.texture.height / 2);
     }
-    if (x >= 0) {
-      playerSprite.position.x = (x * spriteHorizontalRange) +
-          playerSprite.texture.width / 2;
+    if (x != 0) {
+      playerSprite.position.x += x * (playerSprite.texture.width / 2);
     }
   }
 };
