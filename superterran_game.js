@@ -545,7 +545,9 @@ cast.games.superterran.SuperterranGame.prototype.updateEnemy_ = function() {
   var index = this.loopIterator_[0];
   var enemy = this.enemies_[index];
 
+  // If enemy is behind screen
   if (enemy.position.x < -(enemy.texture.width)) {
+    // Move enemy to a random position on the right portion of the screen
     enemy.position.x = this.canvasWidth_ + Math.random() * this.canvasWidth_;
 
     var spriteVerticalRange = this.canvasHeight_ - enemy.texture.height;
@@ -569,6 +571,7 @@ cast.games.superterran.SuperterranGame.prototype.updateEnemy_ = function() {
         enemy.visible = false;
         enemy.position.x = -(enemy.texture.width +
                 this.DISPLAY_BORDER_BUFFER_WIDTH_);
+        player.mass = player.mass +1;
         return;
       }
     }
