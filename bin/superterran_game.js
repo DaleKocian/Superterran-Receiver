@@ -547,7 +547,7 @@ cast.games.superterran.SuperterranGame.prototype.onPlayerMessage_ =
     // Note: Sprites are rendered with the center of the sprite at the desired
     // location hence the texture height / 2 compensation.
     var spriteVerticalRange = this.canvasHeight_ - playerSprite.texture.height;
-    var spriteHorizontalRange = this.canvasWidth__ - playerSprite.texture.width;
+    var spriteHorizontalRange = this.canvasWidth_ - playerSprite.texture.width;
     if (y >= 0) {
       console.log("Old Y=" + playerSprite.position.y);
       playerSprite.position.y = (y * spriteVerticalRange) +
