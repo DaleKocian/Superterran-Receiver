@@ -294,6 +294,8 @@ cast.games.superterran.SuperterranGame.prototype.onAssetsLoaded_ = function() {
     player.position.y = this.canvasHeight_ / 2;
     player.scale.x = player.scale.y = 1;
     player.visible = false;
+    player.height=50;
+    player.width=50;
     this.container_.addChild(player);
 
     this.players_.push(player);
@@ -416,8 +418,6 @@ cast.games.superterran.SuperterranGame.prototype.onPlayerAvailable_ =
 cast.games.superterran.SuperterranGame.prototype.addPlayer_ = function(playerId) {
   // Check if player is already on the screen.
   var playerSprite = this.playerMap_[playerId];
-  playerSprite.width=50;
-  playerSprite.height=50;
   if (playerSprite && playerSprite.visible) {
     return;
   }
