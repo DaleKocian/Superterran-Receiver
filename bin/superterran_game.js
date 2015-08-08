@@ -294,6 +294,8 @@ cast.games.superterran.SuperterranGame.prototype.onAssetsLoaded_ = function() {
     player.position.y = this.canvasHeight_ / 2;
     player.scale.x = player.scale.y = 1;
     player.visible = false;
+    player.height=50;
+    player.width=50;
     this.container_.addChild(player);
 
     this.players_.push(player);
@@ -366,7 +368,7 @@ cast.games.superterran.SuperterranGame.prototype.update_ = function(timestamp) {
     for (var i = 0; i < players.length; i++) {
       var player = players[i];
       this.onPlayerMessage_(player, Math.random() < 0.5 ? true : false,
-          Math.random() * 1.1);
+          Math.random() * 360);
     }
   }
 
@@ -547,11 +549,11 @@ cast.games.superterran.SuperterranGame.prototype.onPlayerMessage_ =
     var spriteHorizontalRange = this.canvasWidth_ - playerSprite.texture.width;
     if (y >= 0) {
       playerSprite.position.y = (y * spriteVerticalRange) +
-          playerSprite.texture.height / 2;
+          playerSprite.height / 2;
     }
     if (x >= 0) {
       playerSprite.position.x = (x * spriteHorizontalRange) +
-          playerSprite.texture.width / 2;
+          playerSprite.width / 2;
     }
   }
 };
