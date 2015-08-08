@@ -815,6 +815,7 @@ cast.games.superterran.SuperterranGame.prototype.updateEnemy_ = function() {
         this.showExplosion_(enemy);
         enemy.visible = !1;
         enemy.position.x = -(enemy.texture.width + this.DISPLAY_BORDER_BUFFER_WIDTH_);
+        player.mass = player.mass +1;
         return;
       }
     }
