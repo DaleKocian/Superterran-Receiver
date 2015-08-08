@@ -549,8 +549,10 @@ cast.games.superterran.SuperterranGame.prototype.onPlayerMessage_ =
     var spriteVerticalRange = this.canvasHeight_ - playerSprite.texture.height;
     var spriteHorizontalRange = this.canvasWidth__ - playerSprite.texture.width;
     if (y >= 0) {
+      console.log("Old Y=" + playerSprite.position.y);
       playerSprite.position.y = (y * spriteVerticalRange) +
           playerSprite.texture.height / 2;
+      console.log("New Y=" + playerSprite.position.y);
     }
   /*  if (x >= 0) {
       playerSprite.position.x = (x * spriteHorizontalRange) +
