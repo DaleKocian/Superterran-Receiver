@@ -516,14 +516,28 @@ cast.games.superterran.SuperterranGame.prototype.onPlayerMessage_ =
     this.fireThisFrame_ = true;
   } else {
 
-
-    // Normalize move.
-    if (move > 1) {
-        move = 1;
-
-    } else if (move < 0) {
-        move = 0;
-
+    var x = -1;
+    var y = -1;
+    if (this.isUp_(move)) {
+      y = 1;
+    } else if (this.isUpRight_(move)) {
+      x = 1;
+      y = 1;
+    }  else if (this.isRight_(move)) {
+      x = 1;
+    } else if (this.isDownRight_(move)) {
+      x = 1;
+      y = 0;
+    } else if (this.isDown_(move)) {
+      x = 0;
+    } else if (this.isDownLeft_(move)) {
+      x = 0;
+      y = 0;
+    } else if (this.isLeft_(move)) {
+      x = 0;
+    } else if (this.isUpLeft_(move)) {
+      y = 1;
+      x = 0;
     }
 
     // The position is calculated with the ship sprite's dimensions taken into
@@ -531,8 +545,15 @@ cast.games.superterran.SuperterranGame.prototype.onPlayerMessage_ =
     // Note: Sprites are rendered with the center of the sprite at the desired
     // location hence the texture height / 2 compensation.
     var spriteVerticalRange = this.canvasHeight_ - playerSprite.texture.height;
-    playerSprite.position.y = (move * spriteVerticalRange) +
-            playerSprite.texture.height / 2;
+    var spriteHorizontalRange = this.canvasWidth__ - playerSprite.texture.width;
+    if (y >= 0) {
+      playerSprite.position.y = (y * spriteVerticalRange) +
+          playerSprite.texture.height / 2;
+    }
+    if (x >= 0) {
+      playerSprite.position.x = (x * spriteHorizontalRange) +
+          playerSprite.texture.width / 2;
+    }
   }
 };
 
@@ -653,7 +674,6 @@ cast.games.superterran.SuperterranGame.prototype.willCollide_ =
   return true;
 };
 
-
 /**
  * Shows explosion at sprite.
  * @param {!PIXI.Sprite} sprite
@@ -699,4 +719,36 @@ cast.games.superterran.SuperterranGame.prototype.fireBullet_ = function(player) 
       return;
     }
   }
+};
+
+cast.games.superterran.SuperterranGame.prototype.isUp_ = function(move) {
+      return move === 0 || move === 360;
+};
+
+cast.games.superterran.SuperterranGame.prototype.isUpRight_ = function(move) {
+  return move > 0 && move < 90;
+};
+
+cast.games.superterran.SuperterranGame.prototype.isRight_ = function(move) {
+  return move === 90;
+};
+
+cast.games.superterran.SuperterranGame.prototype.isDownRight_ = function(move) {
+  return move > 90 && move < 180;
+};
+
+cast.games.superterran.SuperterranGame.prototype.isDown_ = function(move) {
+  return move === 180;
+};
+
+cast.games.superterran.SuperterranGame.prototype.isDownLeft_ = function(move) {
+  return move > 180 && move < 270;
+};
+
+cast.games.superterran.SuperterranGame.prototype.isLeft_ = function(move) {
+  return move === 270;
+};
+
+cast.games.superterran.SuperterranGame.prototype.isUpLeft_ = function(move) {
+  return move > 270 && move < 360;
 };
