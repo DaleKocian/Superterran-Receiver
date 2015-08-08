@@ -545,7 +545,6 @@ cast.games.superterran.SuperterranGame.prototype.onPlayerMessage_ =
     // location hence the texture height / 2 compensation.
     var spriteVerticalRange = this.canvasHeight_ - playerSprite.texture.height;
     var spriteHorizontalRange = this.canvasWidth_ - playerSprite.texture.width;
-    alert(move +":" +y);
     if (y >= 0) {
       playerSprite.position.y = (y * spriteVerticalRange) +
           playerSprite.texture.height / 2;
