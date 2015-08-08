@@ -520,24 +520,24 @@ cast.games.superterran.SuperterranGame.prototype.onPlayerMessage_ =
     var y = -1;
     console.log("move=" + move);
     if (this.isUp_(move)) {
-      y = 1;
+      y = 0;
     } else if (this.isUpRight_(move)) {
       x = 1;
-      y = 1;
+      y = 0;
     }  else if (this.isRight_(move)) {
       x = 1;
     } else if (this.isDownRight_(move)) {
       x = 1;
-      y = 0;
+      y = 1;
     } else if (this.isDown_(move)) {
       x = 0;
     } else if (this.isDownLeft_(move)) {
       x = 0;
-      y = 0;
+      y = 1;
     } else if (this.isLeft_(move)) {
       x = 0;
     } else if (this.isUpLeft_(move)) {
-      y = 1;
+      y = 0;
       x = 0;
     }
     console.log("x=" +x);
