@@ -550,10 +550,10 @@ cast.games.superterran.SuperterranGame.prototype.onPlayerMessage_ =
       playerSprite.position.y = (y * spriteVerticalRange) +
           playerSprite.texture.height / 2;
     }
-    if (x >= 0) {
+  /*  if (x >= 0) {
       playerSprite.position.x = (x * spriteHorizontalRange) +
           playerSprite.texture.width / 2;
-    }
+    }*/
   }
 };
 
