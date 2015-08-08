@@ -518,30 +518,27 @@ cast.games.superterran.SuperterranGame.prototype.onPlayerMessage_ =
 
     var x = -1;
     var y = -1;
-    console.log("move=" + move);
     if (this.isUp_(move)) {
       y = 0;
     } else if (this.isUpRight_(move)) {
-      x = 1;
+      x = 0;
       y = 0;
     }  else if (this.isRight_(move)) {
-      x = 1;
+      x = 0;
     } else if (this.isDownRight_(move)) {
-      x = 1;
+      x = 0;
       y = 1;
     } else if (this.isDown_(move)) {
-      x = 0;
+      y = 1;
     } else if (this.isDownLeft_(move)) {
-      x = 0;
+      x = 1;
       y = 1;
     } else if (this.isLeft_(move)) {
-      x = 0;
+      x = 1;
     } else if (this.isUpLeft_(move)) {
       y = 0;
-      x = 0;
+      x = 1;
     }
-    console.log("x=" +x);
-    console.log("y=" +y);
     // The position is calculated with the ship sprite's dimensions taken into
     // account so the ship will not be rendered out of canvas bounds.
     // Note: Sprites are rendered with the center of the sprite at the desired
@@ -550,15 +547,13 @@ cast.games.superterran.SuperterranGame.prototype.onPlayerMessage_ =
     var spriteHorizontalRange = this.canvasWidth_ - playerSprite.texture.width;
     alert(move +":" +y);
     if (y >= 0) {
-      console.log("Old Y=" + playerSprite.position.y);
       playerSprite.position.y = (y * spriteVerticalRange) +
           playerSprite.texture.height / 2;
-      console.log("New Y=" + playerSprite.position.y);
     }
-  /*  if (x >= 0) {
+    if (x >= 0) {
       playerSprite.position.x = (x * spriteHorizontalRange) +
           playerSprite.texture.width / 2;
-    }*/
+    }
   }
 };
 
