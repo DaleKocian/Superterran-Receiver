@@ -416,6 +416,8 @@ cast.games.superterran.SuperterranGame.prototype.onPlayerAvailable_ =
 cast.games.superterran.SuperterranGame.prototype.addPlayer_ = function(playerId) {
   // Check if player is already on the screen.
   var playerSprite = this.playerMap_[playerId];
+  playerSprite.width=50;
+  playerSprite.height=50;
   if (playerSprite && playerSprite.visible) {
     return;
   }
