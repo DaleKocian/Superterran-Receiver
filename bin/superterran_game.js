@@ -545,8 +545,8 @@ cast.games.superterran.SuperterranGame.prototype.onPlayerMessage_ =
     // account so the ship will not be rendered out of canvas bounds.
     // Note: Sprites are rendered with the center of the sprite at the desired
     // location hence the texture height / 2 compensation.
-    var spriteVerticalRange = this.canvasHeight_ - playerSprite.height;
-    var spriteHorizontalRange = this.canvasWidth_ - playerSprite.width;
+    var spriteVerticalRange = this.canvasHeight_ - playerSprite.height/2;
+    var spriteHorizontalRange = this.canvasWidth_ - playerSprite.width/2;
   playerSprite.position.y = this.getInBoundValue_(playerSprite.position.y + y * (playerSprite.height / 2), playerSprite.height / 2,spriteVerticalRange);
   playerSprite.position.x = this.getInBoundValue_(playerSprite.position.x + x * (playerSprite.width / 2), playerSprite.width / 2,spriteHorizontalRange);
   }
