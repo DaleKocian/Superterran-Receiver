@@ -49,7 +49,7 @@ cast.games.superterran.SuperterranGame = function(gameManager) {
    * AVAILABLE)
    * @public {boolean}
    */
-  this.randomAiEnabled = true;
+  this.randomAiEnabled = false;
 
   /** @private {number} */
   this.canvasWidth_ = window.innerWidth;
@@ -303,7 +303,6 @@ cast.games.superterran.SuperterranGame.prototype.onAssetsLoaded_ = function() {
     player.height=50;
     player.width=50;
     this.container_.addChild(player);
-
     this.players_.push(player);
   }
 
@@ -546,8 +545,8 @@ cast.games.superterran.SuperterranGame.prototype.onPlayerMessage_ =
     // account so the ship will not be rendered out of canvas bounds.
     // Note: Sprites are rendered with the center of the sprite at the desired
     // location hence the texture height / 2 compensation.
-    var spriteVerticalRange = this.canvasHeight_ - playerSprite.texture.height;
-    var spriteHorizontalRange = this.canvasWidth_ - playerSprite.texture.width;
+    var spriteVerticalRange = this.canvasHeight_ - playerSprite.height/2;
+    var spriteHorizontalRange = this.canvasWidth_ - playerSprite.width/2;
     playerSprite.position.y = this.getInBoundValue_(playerSprite.position.y + playerData["vel_y"], playerSprite.height / 2, spriteVerticalRange);
     playerSprite.position.x = this.getInBoundValue_(playerSprite.position.x + playerData["vel_x"],  playerSprite.width / 2,  spriteHorizontalRange);
   }
@@ -591,6 +590,8 @@ cast.games.superterran.SuperterranGame.prototype.updateEnemy_ = function() {
         playerIndex = ":"+this.loopIterator_[1];
         playerData = this.gameManager_.getPlayer(playerIndex)["playerData"];
         playerData["mass"] += 1;
+        player.height += 5;
+        player.width += 5;
         this.gameManager_.updatePlayerData(playerIndex, playerData);
         return;
       }
@@ -598,7 +599,6 @@ cast.games.superterran.SuperterranGame.prototype.updateEnemy_ = function() {
     enemy.visible = true;
   }
 };
-
 
 /**
  * Updates bullet position. Uses #loopIterator_[0] to select bullet to move.
