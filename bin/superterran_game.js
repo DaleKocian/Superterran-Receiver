@@ -91,6 +91,9 @@ cast.games.superterran.SuperterranGame = function(gameManager) {
   this.BOOST_DECAY_ = 0.05;
 
   /** @private {number} */
+  this.BOOST_RECOVER_ = 0.0025;
+
+  /** @private {number} */
   this.BULLET_SPEED_ = 40;
 
   /** @private {string} */
@@ -403,8 +406,7 @@ cast.games.superterran.SuperterranGame.prototype.update_ = function(timestamp) {
       this.loopIterator_[0]++) {
       var player = players[this.loopIterator_[0]];
       if (this.randomAiEnabled) {
-        this.onPlayerMessage_(player, Math.random() < 0.5 ? true : false,
-            Math.random() * 360);
+        this.onPlayerMessage_(player, Math.random() * 360, false, false);
       } 
       this.updatePlayer_();
     }
@@ -556,8 +558,16 @@ cast.games.superterran.SuperterranGame.prototype.onPlayerMessage_ =
 
   if (boost) {
     playerData = this.gameManager_.getPlayer(player.playerId)["playerData"];
-    playerData["boost"] = playerData["boost"] * this.BOOST_FACTOR_;
+    playerData["boost"] = this.BOOST_FACTOR_;
     this.gameManager_.updatePlayerData(player.playerId, playerData);
+  } else if (gravity) {
+    for (var otherPlayerId in this.playerMap_) {
+      if (this.playerMap_.hasOwnProperty(otherPlayerId) && otherPlayerId != player.playerId) {
+        otherPlayerData = this.gameManager_.getPlayer(otherPlayerId)["playerData"];
+        otherPlayerData["boost"] = 0;
+        this.gameManager_.updatePlayerData(otherPlayerId, otherPlayerData);
+      }
+    }
   } else {
 
     var degree = (((move-180)/180)%360)*Math.PI;
@@ -591,8 +601,11 @@ cast.games.superterran.SuperterranGame.prototype.updatePlayer_ = function() {
   playerSprite.position.y = this.getInBoundValue_(playerSprite.position.y + (playerData["vel_y"] * playerData["boost"]), playerSprite.height / 2, spriteVerticalRange);
   playerSprite.position.x = this.getInBoundValue_(playerSprite.position.x + (playerData["vel_x"] * playerData["boost"]),  playerSprite.width / 2,  spriteHorizontalRange);
 
-  if (playerData["boost"] > 1){
+  if (playerData["boost"] > 1) {
     playerData["boost"] = Math.max(1, playerData["boost"] - this.BOOST_DECAY_);
+    this.gameManager_.updatePlayerData(this.playerIdMap_[index], playerData);
+  } else if (playerData["boost"] < 1) {
+    playerData["boost"] = Math.min(1, playerData["boost"] + this.BOOST_RECOVER_);
     this.gameManager_.updatePlayerData(this.playerIdMap_[index], playerData);
   }
 };
