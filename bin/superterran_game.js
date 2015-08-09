@@ -547,12 +547,8 @@ cast.games.superterran.SuperterranGame.prototype.onPlayerMessage_ =
     // location hence the texture height / 2 compensation.
     var spriteVerticalRange = this.canvasHeight_ - playerSprite.height;
     var spriteHorizontalRange = this.canvasWidth_ - playerSprite.width;
-    if (y != 0) {
-      playerSprite.position.y += y * (playerSprite.height / 2);
-    }
-    if (x != 0) {
-      playerSprite.position.x += x * (playerSprite.width / 2);
-    }
+  playerSprite.position.y = this.getInBoundValue_(playerSprite.position.y + y * (playerSprite.height / 2));
+  playerSprite.position.x = this.getInBoundValue_(playerSprite.position.x + x * (playerSprite.width / 2));
   }
 };
 
@@ -750,4 +746,13 @@ cast.games.superterran.SuperterranGame.prototype.isLeft_ = function(move) {
 
 cast.games.superterran.SuperterranGame.prototype.isUpLeft_ = function(move) {
   return move > 270 && move < 360;
+};
+
+cast.games.superterran.SuperterranGame.prototype.getInBoundValue_ = function(position, max) {
+  if (position > max) {
+      return max;
+  } else if (position < 0) {
+      return 0;
+  }
+  return position;
 };
