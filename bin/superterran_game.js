@@ -547,8 +547,8 @@ cast.games.superterran.SuperterranGame.prototype.onPlayerMessage_ =
     // location hence the texture height / 2 compensation.
     var spriteVerticalRange = this.canvasHeight_ - playerSprite.height;
     var spriteHorizontalRange = this.canvasWidth_ - playerSprite.width;
-  playerSprite.position.y = this.getInBoundValue_(playerSprite.position.y + y * (playerSprite.height / 2), spriteVerticalRange);
-  playerSprite.position.x = this.getInBoundValue_(playerSprite.position.x + x * (playerSprite.width / 2), spriteHorizontalRange);
+  playerSprite.position.y = this.getInBoundValue_(playerSprite.position.y + y * (playerSprite.height / 2), playerSprite.height / 2,spriteVerticalRange);
+  playerSprite.position.x = this.getInBoundValue_(playerSprite.position.x + x * (playerSprite.width / 2), playerSprite.width / 2,spriteHorizontalRange);
   }
 };
 
@@ -748,11 +748,11 @@ cast.games.superterran.SuperterranGame.prototype.isUpLeft_ = function(move) {
   return move > 270 && move < 360;
 };
 
-cast.games.superterran.SuperterranGame.prototype.getInBoundValue_ = function(position, max) {
+cast.games.superterran.SuperterranGame.prototype.getInBoundValue_ = function(position, min, max) {
   if (position > max) {
       return max;
-  } else if (position < 0) {
-      return 0;
+  } else if (position < min) {
+      return min;
   }
   return position;
 };
