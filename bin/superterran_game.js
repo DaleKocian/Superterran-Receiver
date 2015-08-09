@@ -49,7 +49,7 @@ cast.games.superterran.SuperterranGame = function(gameManager) {
    * AVAILABLE)
    * @public {boolean}
    */
-  this.randomAiEnabled = true;
+  this.randomAiEnabled = false;
 
   /** @private {number} */
   this.canvasWidth_ = window.innerWidth;
