@@ -79,10 +79,10 @@ cast.games.superterran.SuperterranGame = function(gameManager) {
   this.MAX_EXPLOSIONS_ = 5;
 
   /** @private {number} */
-  this.MIN_SPEED_ = 10;
+  this.MIN_SPEED_ = 5;
 
   /** @private {number} */
-  this.MAX_SPEED_ = 30;
+  this.MAX_SPEED_ = 15;
 
   /** @private {number} */
   this.BULLET_SPEED_ = 40;
@@ -125,6 +125,9 @@ cast.games.superterran.SuperterranGame = function(gameManager) {
   /** @private {PIXI.Sprite} The background. */
   this.backgroundSprite_ = null;
 
+  /** @private {!Array.<!PIXI.Texture>} All astroid textures. */
+  this.astroidTextures_ = [];
+
   /** @private {!Array.<!PIXI.Texture>} All explosion textures. */
   this.explosionTextures_ = [];
 
@@ -155,6 +158,9 @@ cast.games.superterran.SuperterranGame = function(gameManager) {
   this.loader_ = new PIXI.loaders.Loader();
   this.loader_.add('assets/background.jpg');
   this.loader_.add('assets/pluto.png');
+  for (var i = 0; i < 30; i++) {
+    this.loader_.add('assets/astroid' + (i + 1) + ".jpeg");
+  }
   this.loader_.add('assets/enemy.png');
   this.loader_.add('assets/explosion.json');
   this.loader_.add('assets/explosion.png');
@@ -317,16 +323,21 @@ cast.games.superterran.SuperterranGame.prototype.onAssetsLoaded_ = function() {
     this.players_.push(player);
   }
 
-  for (var i = 0; i < this.MAX_ENEMIES_; i++) {
-    var enemy = PIXI.Sprite.fromImage('assets/enemy.png');
-    enemy.anchor.x = 0.5;
-    enemy.anchor.y = 0.5;
-    enemy.position.x = -(enemy.texture.width +
-            this.DISPLAY_BORDER_BUFFER_WIDTH_);
-    enemy.position.y = 0;
-    this.container_.addChild(enemy);
+  for (var i = 0; i < 30; i++) {
+    var astroidTexture = PIXI.Texture.fromImage('assets/astroid' + (i + 1) + ".png");
+    this.astroidTextures_.push(astroidTexture);
+  }
 
-    this.enemies_.push(enemy);
+  for (var i = 0; i < this.MAX_ENEMIES_; i++) {
+    var astroid = new PIXI.extras.MovieClip(this.astroidTextures_);
+    astroid.anchor.x = 0.5;
+    astroid.anchor.y = 0.5;
+    astroid.position.x = -(astroid.texture.width +
+            this.DISPLAY_BORDER_BUFFER_WIDTH_);
+    astroid.position.y = 0;
+    this.container_.addChild(astroid);
+
+    this.enemies_.push(astroid);
     this.enemySpeeds_[i] = 0;
   }
 
@@ -620,6 +631,9 @@ cast.games.superterran.SuperterranGame.prototype.updateEnemy_ = function() {
 
     this.enemySpeeds_[index] = Math.floor(Math.random() * (this.MAX_SPEED_ -
         this.MIN_SPEED_ + 1)) + this.MIN_SPEED_;
+    enemy.animationSpeed = Math.random();
+    enemy.tint = Math.random() * 0xffffff;
+    enemy.play();
   } else {
     enemy.position.x -= this.enemySpeeds_[index];
     for (this.loopIterator_[1] = 0; this.loopIterator_[1] < this.MAX_PLAYERS_;
