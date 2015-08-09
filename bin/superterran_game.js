@@ -410,16 +410,8 @@ cast.games.superterran.SuperterranGame.prototype.update_ = function(timestamp) {
   var players = this.gameManager_.getPlayers(); 
   for (this.loopIterator_[0] = 0; this.loopIterator_[0] < players.length;this.loopIterator_[0]++) {
     var player = players[this.loopIterator_[0]];
-    if(this.checkWinner_(player)) {
-      this.winningMsg = new PIXI.Text("You Are Winner: " + player.playerData.playerName, {font:"50px Arial", fill:"red"});            
-      this.container_.addChild(this.winningMsg);
-      this.renderer_.render(this.container_);
-      this.restartGame_(players);
-      return;
-    }
     if (this.randomAiEnabled) {
-      this.onPlayerMessage_(player, Math.random() < 0.5 ? true : false,
-          Math.random() * 360);
+      this.onPlayerMessage_(player, Math.random() * 360, false, false, false);
     } 
     this.updatePlayer_();
   }
@@ -440,18 +432,26 @@ cast.games.superterran.SuperterranGame.prototype.update_ = function(timestamp) {
 /**
  * RESTART THE GAME
  */
-cast.games.superterran.SuperterranGame.prototype.restartGame_ = function(players) {
+cast.games.superterran.SuperterranGame.prototype.restartGame_ = function() {
    this.isRunning_ = false;
+
+   this.container_.addChild(this.winningMsg);
+   this.renderer_.render(this.container_);
+
    setTimeout(function() {
        this.game.isRunning_ = true;
        this.game.update_();
        this.game.container_.removeChild(this.game.winningMsg);
        this.game.winningMsg.destroy();
       }, 5000);
-      for (this.loopIterator_[0] = 0; this.loopIterator_[0] < players.length; this.loopIterator_[0]++) {
+      for (this.loopIterator_[0] = 0; this.loopIterator_[0] < this.players_.length; this.loopIterator_[0]++) {
+        var playerId = this.playerIdMap_[index];
+        if (!playerId) {
+          continue;
+        }
         var index = this.loopIterator_[0];
         var playerSprite = this.players_[index];
-        var playerData = this.gameManager_.getPlayer(this.playerIdMap_[index])["playerData"];
+        var playerData = this.gameManager_.getPlayer(playerId)["playerData"];
         playerSprite.position.y = this.canvasHeight_ / 2;;
         playerSprite.position.x = 60;
         playerSprite.height = 50;
@@ -598,6 +598,9 @@ cast.games.superterran.SuperterranGame.prototype.onPlayerMessage_ =
   if (boost) {
     playerData = this.gameManager_.getPlayer(player.playerId)["playerData"];
     playerData["boost"] = this.BOOST_FACTOR_;
+    this.gameManager_.updatePlayerData(player.playerId, playerData);
+  } else if (playerField) {
+    playerData = this.gameManager_.getPlayer(player.playerId)["playerData"];
     playerData["playerName"] = playerField;
     this.gameManager_.updatePlayerData(player.playerId, playerData);
   } else if (gravity) {
@@ -692,6 +695,13 @@ cast.games.superterran.SuperterranGame.prototype.updateEnemy_ = function() {
         var playerIndex = this.playerIdMap_[this.loopIterator_[1]];
         var playerData = this.gameManager_.getPlayer(playerIndex)["playerData"];
         playerData["mass"] += 1;
+
+        if(playerData["mass"] >= this.WINNING_SCORE_) {
+          this.winningMsg = new PIXI.Text("You Are Winner: " + playerData['playerName'], {font:"50px Arial", fill:"red"});
+          this.restartGame_();
+          return;
+        }
+
         player.height += 7;
         player.width += 7;
         this.gameManager_.updatePlayerData(playerIndex, playerData);
@@ -793,7 +803,6 @@ cast.games.superterran.SuperterranGame.prototype.showExplosion_ = function(sprit
   }
 };
 
-
 /**
  * Callback to hide explosion.
  * @param {!PIXI.extras.MovieClip} explosion
@@ -803,11 +812,6 @@ cast.games.superterran.SuperterranGame.prototype.hideExplosion_ =
     function(explosion) {
   explosion.visible = false;
 };
-
-cast.games.superterran.SuperterranGame.prototype.checkWinner_ = function(player) {
-  return player.playerData.mass >= this.WINNING_SCORE_;
-};
-
 
 /**
  * Fires bullet.
