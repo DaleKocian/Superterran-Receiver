@@ -592,8 +592,8 @@ cast.games.superterran.SuperterranGame.prototype.updateEnemy_ = function() {
           playerData = {"mass" : 0};
         }
         playerData["mass"] += 1;
-        player.height += 50;
-        player.width += 50;
+        player.height += 5;
+        player.width += 5;
         this.gameManager_.updatePlayerData(playerIndex, playerData);
         return;
       }
