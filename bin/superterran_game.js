@@ -49,7 +49,7 @@ cast.games.superterran.SuperterranGame = function(gameManager) {
    * AVAILABLE)
    * @public {boolean}
    */
-  this.randomAiEnabled = true;
+  this.randomAiEnabled = false;
 
   /** @private {number} */
   this.canvasWidth_ = window.innerWidth;
@@ -297,7 +297,6 @@ cast.games.superterran.SuperterranGame.prototype.onAssetsLoaded_ = function() {
     player.height=50;
     player.width=50;
     this.container_.addChild(player);
-
     this.players_.push(player);
   }
 
@@ -560,7 +559,7 @@ cast.games.superterran.SuperterranGame.prototype.onPlayerMessage_ =
 cast.games.superterran.SuperterranGame.prototype.updateEnemy_ = function() {
   var index = this.loopIterator_[0];
   var enemy = this.enemies_[index];
-
+  var player = this.players_[index];
   // If enemy is behind screen
   if (enemy.position.x < -(enemy.texture.width)) {
     // Move enemy to a random position on the right portion of the screen
@@ -593,6 +592,8 @@ cast.games.superterran.SuperterranGame.prototype.updateEnemy_ = function() {
           playerData = {"mass" : 0};
         }
         playerData["mass"] += 1;
+        player.width+=1;
+        player.height+=1;
         this.gameManager_.updatePlayerData(playerIndex, playerData);
         return;
       }
@@ -600,7 +601,6 @@ cast.games.superterran.SuperterranGame.prototype.updateEnemy_ = function() {
     enemy.visible = true;
   }
 };
-
 
 /**
  * Updates bullet position. Uses #loopIterator_[0] to select bullet to move.
