@@ -73,7 +73,7 @@ cast.games.superterran.SuperterranGame = function(gameManager) {
   this.MAX_PLAYER_SPEED_ = 10;
 
   /** @private {number} */
-  this.MAX_PLAYER_ACCEL_ = 0.5;
+  this.MAX_PLAYER_ACCEL_ = 1.0;
 
   /** @private {number} */
   this.MAX_EXPLOSIONS_ = 5;
@@ -533,12 +533,14 @@ cast.games.superterran.SuperterranGame.prototype.onPlayerMessage_ =
     // this.fireThisFrame_ = true;
   } else {
 
-    var x = Math.sin(((move+90)/180)*Math.PI) * this.MAX_PLAYER_SPEED_;
-    var y = Math.cos(((move+90)/180)*Math.PI) * this.MAX_PLAYER_SPEED_;
+    var degree = (((move-90)/180)%360)*Math.PI;
+
+    var x = Math.sin(degree) * this.MAX_PLAYER_ACCEL_;
+    var y = Math.cos(degree) * this.MAX_PLAYER_ACCEL_;
 
     playerData = this.gameManager_.getPlayer(player.playerId)["playerData"];
     playerData["vel_y"] = this.getInBoundValue_(playerData["vel_y"] + y, -1*this.MAX_PLAYER_SPEED_, this.MAX_PLAYER_SPEED_);
-    playerData["vel_x"] = this.getInBoundValue_(playerData["vel_x"] + x, -1*this.MAX_PLAYER_SPEED_, this.MAX_PLAYER_SPEED_);
+    playerData["vel_x"] = this.getInBoundValue_(playerData["vel_x"] - x, -1*this.MAX_PLAYER_SPEED_, this.MAX_PLAYER_SPEED_);
     this.gameManager_.updatePlayerData(player.playerId, playerData);
 
     // The position is calculated with the ship sprite's dimensions taken into
