@@ -518,28 +518,28 @@ cast.games.superterran.SuperterranGame.prototype.onPlayerMessage_ =
     // this.fireThisFrame_ = true;
   } else {
 
-    var x = -1;
-    var y = -1;
+    var x = 0;
+    var y = 0;
     if (this.isUp_(move)) {
-      y = 0;
+      y = -1;
     } else if (this.isUpRight_(move)) {
-      x = 0;
-      y = 0;
+      x = 1;
+      y = -1;
     }  else if (this.isRight_(move)) {
-      x = 0;
+      x = 1;
     } else if (this.isDownRight_(move)) {
-      x = 0;
+      x = 1;
       y = 1;
     } else if (this.isDown_(move)) {
       y = 1;
     } else if (this.isDownLeft_(move)) {
-      x = 1;
+      x = -1;
       y = 1;
     } else if (this.isLeft_(move)) {
-      x = 1;
+      x = -1;
     } else if (this.isUpLeft_(move)) {
-      y = 0;
-      x = 1;
+      y = -1;
+      x = -1;
     }
     // The position is calculated with the ship sprite's dimensions taken into
     // account so the ship will not be rendered out of canvas bounds.
@@ -547,14 +547,8 @@ cast.games.superterran.SuperterranGame.prototype.onPlayerMessage_ =
     // location hence the texture height / 2 compensation.
     var spriteVerticalRange = this.canvasHeight_ - playerSprite.texture.height;
     var spriteHorizontalRange = this.canvasWidth_ - playerSprite.texture.width;
-    if (y >= 0) {
-      playerSprite.position.y = (y * spriteVerticalRange) +
-          playerSprite.height / 2;
-    }
-    if (x >= 0) {
-      playerSprite.position.x = (x * spriteHorizontalRange) +
-          playerSprite.width / 2;
-    }
+    playerSprite.position.y = this.getInBoundValue_(playerSprite.position.y + y * (playerSprite.height / 2), playerSprite.height / 2, spriteVerticalRange);
+    playerSprite.position.x = this.getInBoundValue_(playerSprite.position.x + x * (playerSprite.width / 2),  playerSprite.width / 2,  spriteHorizontalRange);
   }
 };
 
@@ -729,33 +723,42 @@ cast.games.superterran.SuperterranGame.prototype.fireBullet_ = function(player) 
 };
 
 cast.games.superterran.SuperterranGame.prototype.isUp_ = function(move) {
-      return move === 0 || move === 360;
+      return (0 <= move && move <= 22.5) || (337.5 <= move && move <= 360);
 };
 
 cast.games.superterran.SuperterranGame.prototype.isUpRight_ = function(move) {
-  return move > 0 && move < 90;
+  return (22.5 < move && move <= 67.5);
 };
 
 cast.games.superterran.SuperterranGame.prototype.isRight_ = function(move) {
-  return move === 90;
+  return (67.5 < move && move <= 112.5);
 };
 
 cast.games.superterran.SuperterranGame.prototype.isDownRight_ = function(move) {
-  return move > 90 && move < 180;
+  return (112.5 < move && move <= 157.5);
 };
 
 cast.games.superterran.SuperterranGame.prototype.isDown_ = function(move) {
-  return move === 180;
+  return (157.5 < move && move <= 202.5);
 };
 
 cast.games.superterran.SuperterranGame.prototype.isDownLeft_ = function(move) {
-  return move > 180 && move < 270;
+  return (202.5 < move && move <= 247.5);
 };
 
 cast.games.superterran.SuperterranGame.prototype.isLeft_ = function(move) {
-  return move === 270;
+  return (247.5 < move && move <= 292.5);
 };
 
 cast.games.superterran.SuperterranGame.prototype.isUpLeft_ = function(move) {
-  return move > 270 && move < 360;
+  return (292.5 < move && move <= 337.5);
+};
+
+cast.games.superterran.SuperterranGame.prototype.getInBoundValue_ = function(position, min, max) {
+  if (position > max) {
+      return max;
+  } else if (position < min) {
+      return min;
+  }
+  return position;
 };
