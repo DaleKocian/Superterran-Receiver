@@ -49,7 +49,7 @@ cast.games.superterran.SuperterranGame = function(gameManager) {
    * AVAILABLE)
    * @public {boolean}
    */
-  this.randomAiEnabled = false;
+  this.randomAiEnabled = true;
 
   /** @private {number} */
   this.canvasWidth_ = window.innerWidth;
@@ -95,6 +95,10 @@ cast.games.superterran.SuperterranGame = function(gameManager) {
 
   /** @private {number} */
   this.BULLET_SPEED_ = 40;
+  
+  this.WINNING_SCORE_ = 40;
+  
+  this.winningMsg;
 
   /** @private {string} */
   this.MULTIPLE_FIRE_MESSAGES_ERROR_ =
@@ -150,6 +154,7 @@ cast.games.superterran.SuperterranGame = function(gameManager) {
 
   /** @private {boolean} */
   this.isRunning_ = false;
+  this.isShowingWin_ = false;
 
   /** @private {!PIXI.Container} */
   this.container_ = new PIXI.Container();
@@ -274,9 +279,9 @@ cast.games.superterran.SuperterranGame.prototype.stop = function() {
  */
 cast.games.superterran.SuperterranGame.prototype.start_ = function() {
   // If callback is null, the game was stopped already.
-  if (!this.loadedCallback_) {
-    return;
-  }
+  // if (!this.loadedCallback_) {
+  //   return;
+  // }
 
   document.body.appendChild(this.renderer_.view);
   this.isRunning_ = true;
@@ -396,21 +401,24 @@ cast.games.superterran.SuperterranGame.prototype.update_ = function(timestamp) {
   if (!this.isRunning_) {
     return;
   }
-
   requestAnimationFrame(this.boundUpdateFunction_);
-
   this.fireThisFrame_ = false;
-  
-    var players = this.gameManager_.getPlayers();
-    for (this.loopIterator_[0] = 0; this.loopIterator_[0] < players.length;
-      this.loopIterator_[0]++) {
-      var player = players[this.loopIterator_[0]];
-      if (this.randomAiEnabled) {
-        this.onPlayerMessage_(player, Math.random() * 360, false, false);
-      } 
-      this.updatePlayer_();
+  var players = this.gameManager_.getPlayers(); 
+  for (this.loopIterator_[0] = 0; this.loopIterator_[0] < players.length;this.loopIterator_[0]++) {
+    var player = players[this.loopIterator_[0]];
+    if(this.checkWinner_(player)) {
+      this.winningMsg = new PIXI.Text("You Are Winner: " + player.playerId, {font:"50px Arial", fill:"red"});            
+      this.container_.addChild(this.winningMsg);
+      this.renderer_.render(this.container_);
+      this.restartGame_(players);
+      return;
     }
-
+    if (this.randomAiEnabled) {
+      this.onPlayerMessage_(player, Math.random() < 0.5 ? true : false,
+          Math.random() * 360);
+    } 
+    this.updatePlayer_();
+  }
   for (this.loopIterator_[0] = 0; this.loopIterator_[0] < this.MAX_ENEMIES_;
       this.loopIterator_[0]++) {
     this.updateEnemy_();
@@ -425,6 +433,31 @@ cast.games.superterran.SuperterranGame.prototype.update_ = function(timestamp) {
   this.renderer_.render(this.container_);
 };
 
+/**
+ * RESTART THE GAME
+ */
+cast.games.superterran.SuperterranGame.prototype.restartGame_ = function(players) {
+   this.isRunning_ = false;
+   setTimeout(function() {
+       this.game.isRunning_ = true;
+       this.game.update_();
+       this.game.container_.removeChild(this.game.winningMsg);
+       this.game.winningMsg.destroy();
+      }, 5000);
+      for (this.loopIterator_[0] = 0; this.loopIterator_[0] < players.length; this.loopIterator_[0]++) {
+        var index = this.loopIterator_[0];
+        var playerSprite = this.players_[index];
+        var playerData = this.gameManager_.getPlayer(this.playerIdMap_[index])["playerData"];
+        playerSprite.position.y = this.canvasHeight_ / 2;;
+        playerSprite.position.x = 60;
+        playerSprite.height = 50;
+        playerSprite.width = 50;
+        playerData.mass = 0;
+        playerData.vel_x = 0;
+        playerData.vel_y=0;
+        this.gameManager_.updatePlayerData(this.gameManager_.getPlayer(this.playerIdMap_[index])["playerId"], playerData);    
+      }
+}
 
 /**
  * Handles when a player becomes available to the game manager.
@@ -648,6 +681,7 @@ cast.games.superterran.SuperterranGame.prototype.updateEnemy_ = function() {
         enemy.visible = false;
         enemy.position.x = -(enemy.texture.width +
                 this.DISPLAY_BORDER_BUFFER_WIDTH_);
+        //UPDATE PLAYER SIZE
         var playerIndex = this.playerIdMap_[this.loopIterator_[1]];
         var playerData = this.gameManager_.getPlayer(playerIndex)["playerData"];
         playerData["mass"] += 1;
@@ -761,6 +795,10 @@ cast.games.superterran.SuperterranGame.prototype.showExplosion_ = function(sprit
 cast.games.superterran.SuperterranGame.prototype.hideExplosion_ =
     function(explosion) {
   explosion.visible = false;
+};
+
+cast.games.superterran.SuperterranGame.prototype.checkWinner_ = function(player) {
+  return player.playerData.mass >= this.WINNING_SCORE_;
 };
 
 
