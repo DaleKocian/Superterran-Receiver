@@ -95,6 +95,12 @@ cast.games.superterran.SuperterranGame = function(gameManager) {
   this.players_ = [];
 
   /**
+   * A map from player indexs to player ids.
+   * @private {!Object.<int, string>}.
+   */
+  this.playerIdMap_ = {};
+
+  /**
    * A map from player ids to player sprites.
    * @private {!Object.<string, !PIXI.Sprite>}.
    */
@@ -122,7 +128,7 @@ cast.games.superterran.SuperterranGame = function(gameManager) {
   this.explosions_ = [];
 
   /** @private {boolean} True if there is already a fire message this frame. */
-  this.fireThisFrame_ = false;
+  this.fireThisFrame_ = true;
 
   /** @private {function(number)} Pre-bound call to #update. */
   this.boundUpdateFunction_ = this.update_.bind(this);
@@ -367,15 +373,17 @@ cast.games.superterran.SuperterranGame.prototype.update_ = function(timestamp) {
   requestAnimationFrame(this.boundUpdateFunction_);
 
   this.fireThisFrame_ = false;
-
-  if (this.randomAiEnabled) {
+  
     var players = this.gameManager_.getPlayers();
-    for (var i = 0; i < players.length; i++) {
-      var player = players[i];
-      this.onPlayerMessage_(player, Math.random() < 0.5 ? true : false,
-          Math.random() * 360);
+    for (this.loopIterator_[0] = 0; this.loopIterator_[0] < players.length;
+      this.loopIterator_[0]++) {
+      var player = players[this.loopIterator_[0]];
+      if (this.randomAiEnabled) {
+        this.onPlayerMessage_(player, Math.random() < 0.5 ? true : false,
+            Math.random() * 360);
+      } 
+      this.updatePlayer_();
     }
-  }
 
   for (this.loopIterator_[0] = 0; this.loopIterator_[0] < this.MAX_ENEMIES_;
       this.loopIterator_[0]++) {
@@ -433,6 +441,7 @@ cast.games.superterran.SuperterranGame.prototype.addPlayer_ = function(playerId)
     if (player && !player.visible) {
       // Associate player sprite with player ID.
       this.playerMap_[playerId] = player;
+      this.playerIdMap_[i] = playerId;
       player.visible = true;
       player.tint = Math.random() * 0xffffff;
       break;
@@ -440,13 +449,12 @@ cast.games.superterran.SuperterranGame.prototype.addPlayer_ = function(playerId)
   }
 
   // Preassign player data
-  playerData = {
+  var playerData = {
                   "mass" : 0,
                   "vel_x": 0,
                   "vel_y": 0
                };  
   this.gameManager_.updatePlayerData(playerId, playerData);
-
 
 };
 
@@ -520,11 +528,6 @@ cast.games.superterran.SuperterranGame.prototype.onGameMessage_ = function(event
 cast.games.superterran.SuperterranGame.prototype.onPlayerMessage_ =
     function(player, fire, move) {
 
-  var playerSprite = this.playerMap_[player.playerId];
-  if (!playerSprite) {
-    throw Error('No player sprite found for player ' + player.playerId);
-  }
-
   if (fire) {
     // this.fireBullet_(playerSprite);
     // if (this.fireThisFrame_) {
@@ -533,7 +536,7 @@ cast.games.superterran.SuperterranGame.prototype.onPlayerMessage_ =
     // this.fireThisFrame_ = true;
   } else {
 
-    var degree = (((move-90)/180)%360)*Math.PI;
+    var degree = (((move-180)/180)%360)*Math.PI;
 
     var x = Math.sin(degree) * this.MAX_PLAYER_ACCEL_;
     var y = Math.cos(degree) * this.MAX_PLAYER_ACCEL_;
@@ -542,16 +545,27 @@ cast.games.superterran.SuperterranGame.prototype.onPlayerMessage_ =
     playerData["vel_y"] = this.getInBoundValue_(playerData["vel_y"] + y, -1*this.MAX_PLAYER_SPEED_, this.MAX_PLAYER_SPEED_);
     playerData["vel_x"] = this.getInBoundValue_(playerData["vel_x"] - x, -1*this.MAX_PLAYER_SPEED_, this.MAX_PLAYER_SPEED_);
     this.gameManager_.updatePlayerData(player.playerId, playerData);
-
-    // The position is calculated with the ship sprite's dimensions taken into
-    // account so the ship will not be rendered out of canvas bounds.
-    // Note: Sprites are rendered with the center of the sprite at the desired
-    // location hence the texture height / 2 compensation.
-    var spriteVerticalRange = this.canvasHeight_ - playerSprite.height/2;
-    var spriteHorizontalRange = this.canvasWidth_ - playerSprite.width/2;
-    playerSprite.position.y = this.getInBoundValue_(playerSprite.position.y + playerData["vel_y"], playerSprite.height / 2, spriteVerticalRange);
-    playerSprite.position.x = this.getInBoundValue_(playerSprite.position.x + playerData["vel_x"],  playerSprite.width / 2,  spriteHorizontalRange);
   }
+};
+
+
+/**
+ * Updates enemy position. Uses #loopIterator_[0] to select enemy to move.
+ * @private
+ */
+cast.games.superterran.SuperterranGame.prototype.updatePlayer_ = function() {
+  var index = this.loopIterator_[0];
+  var playerSprite = this.players_[index];
+  var playerData = this.gameManager_.getPlayer(this.playerIdMap_[index])["playerData"];
+
+  // The position is calculated with the ship sprite's dimensions taken into
+  // account so the ship will not be rendered out of canvas bounds.
+  // Note: Sprites are rendered with the center of the sprite at the desired
+  // location hence the texture height / 2 compensation.
+  var spriteVerticalRange = this.canvasHeight_ - playerSprite.height/2;
+  var spriteHorizontalRange = this.canvasWidth_ - playerSprite.width/2;
+  playerSprite.position.y = this.getInBoundValue_(playerSprite.position.y + playerData["vel_y"], playerSprite.height / 2, spriteVerticalRange);
+  playerSprite.position.x = this.getInBoundValue_(playerSprite.position.x + playerData["vel_x"],  playerSprite.width / 2,  spriteHorizontalRange);
 };
 
 
@@ -589,8 +603,8 @@ cast.games.superterran.SuperterranGame.prototype.updateEnemy_ = function() {
         enemy.visible = false;
         enemy.position.x = -(enemy.texture.width +
                 this.DISPLAY_BORDER_BUFFER_WIDTH_);
-        playerIndex = ":"+this.loopIterator_[1];
-        playerData = this.gameManager_.getPlayer(playerIndex)["playerData"];
+        var playerIndex = this.playerIdMap_[this.loopIterator_[1]];
+        var playerData = this.gameManager_.getPlayer(playerIndex)["playerData"];
         playerData["mass"] += 1;
         player.height += 5;
         player.width += 5;
