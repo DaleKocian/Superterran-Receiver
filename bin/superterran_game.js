@@ -445,11 +445,11 @@ cast.games.superterran.SuperterranGame.prototype.restartGame_ = function() {
        this.game.winningMsg.destroy();
       }, 5000);
       for (this.loopIterator_[0] = 0; this.loopIterator_[0] < this.players_.length; this.loopIterator_[0]++) {
+        var index = this.loopIterator_[0];
         var playerId = this.playerIdMap_[index];
         if (!playerId) {
           continue;
         }
-        var index = this.loopIterator_[0];
         var playerSprite = this.players_[index];
         var playerData = this.gameManager_.getPlayer(playerId)["playerData"];
         playerSprite.position.y = this.canvasHeight_ / 2;;
