@@ -96,7 +96,7 @@ cast.games.superterran.SuperterranGame = function(gameManager) {
   /** @private {number} */
   this.BULLET_SPEED_ = 40;
   
-  this.WINNING_SCORE_ = 40;
+  this.WINNING_SCORE_ = 3;
   
   this.winningMsg;
 
@@ -198,9 +198,13 @@ cast.games.superterran.SuperterranGame = function(gameManager) {
   this.boundPlayerQuitCallback_ = this.onPlayerQuit_.bind(this);
 };
 
+/**
+ * JSON message field used for playername
+ */
+ cast.games.superterran.SuperterranGame.PLAYER_NAME='user_name';
 
 /**
- * JSON message field used to fire.
+ * JSON message field used to boost.
  * @private
  */
 cast.games.superterran.SuperterranGame.BOOST_FIELD_ = 'boost';
@@ -407,7 +411,7 @@ cast.games.superterran.SuperterranGame.prototype.update_ = function(timestamp) {
   for (this.loopIterator_[0] = 0; this.loopIterator_[0] < players.length;this.loopIterator_[0]++) {
     var player = players[this.loopIterator_[0]];
     if(this.checkWinner_(player)) {
-      this.winningMsg = new PIXI.Text("You Are Winner: " + player.playerId, {font:"50px Arial", fill:"red"});            
+      this.winningMsg = new PIXI.Text("You Are Winner: " + player.playerData.playerName, {font:"50px Arial", fill:"red"});            
       this.container_.addChild(this.winningMsg);
       this.renderer_.render(this.container_);
       this.restartGame_(players);
@@ -513,6 +517,7 @@ cast.games.superterran.SuperterranGame.prototype.addPlayer_ = function(playerId)
                   "vel_x": 0,
                   "vel_y": 0,
                   "boost": 1.0,
+                  "playerName": "Pluto"
                };  
   this.gameManager_.updatePlayerData(playerId, playerData);
 
@@ -574,7 +579,8 @@ cast.games.superterran.SuperterranGame.prototype.onGameMessage_ = function(event
       cast.games.superterran.SuperterranGame.BOOST_FIELD_];
   var gravityField = event.requestExtraMessageData[
       cast.games.superterran.SuperterranGame.GRAVITY_FIELD_];
-  this.onPlayerMessage_(player, moveField ? parseFloat(moveField) : 0, !!boostField, !!gravityField);
+  var playerField = event.requestExtraMessageData[cast.games.superterran.SuperterranGame.PLAYER_NAME];
+  this.onPlayerMessage_(player, moveField ? parseFloat(moveField) : 0, !!boostField, !!gravityField, playerField);
 };
 
 
@@ -587,11 +593,12 @@ cast.games.superterran.SuperterranGame.prototype.onGameMessage_ = function(event
  * @private
  */
 cast.games.superterran.SuperterranGame.prototype.onPlayerMessage_ =
-    function(player, move, boost, gravity) {
+    function(player, move, boost, gravity, playerField) {
 
   if (boost) {
     playerData = this.gameManager_.getPlayer(player.playerId)["playerData"];
     playerData["boost"] = this.BOOST_FACTOR_;
+    playerData["playerName"] = playerField;
     this.gameManager_.updatePlayerData(player.playerId, playerData);
   } else if (gravity) {
     for (var otherPlayerId in this.playerMap_) {
@@ -685,8 +692,8 @@ cast.games.superterran.SuperterranGame.prototype.updateEnemy_ = function() {
         var playerIndex = this.playerIdMap_[this.loopIterator_[1]];
         var playerData = this.gameManager_.getPlayer(playerIndex)["playerData"];
         playerData["mass"] += 1;
-        player.height += 5;
-        player.width += 5;
+        player.height += 7;
+        player.width += 7;
         this.gameManager_.updatePlayerData(playerIndex, playerData);
         return;
       }
