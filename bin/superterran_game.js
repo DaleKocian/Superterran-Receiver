@@ -96,7 +96,7 @@ cast.games.superterran.SuperterranGame = function(gameManager) {
   /** @private {number} */
   this.BULLET_SPEED_ = 40;
   
-  this.WINNING_SCORE_ = 3;
+  this.WINNING_SCORE_ = 20;
   
   this.winningMsg;
 
