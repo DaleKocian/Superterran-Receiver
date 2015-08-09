@@ -49,7 +49,7 @@ cast.games.superterran.SuperterranGame = function(gameManager) {
    * AVAILABLE)
    * @public {boolean}
    */
-  this.randomAiEnabled = true;
+  this.randomAiEnabled = false;
 
   /** @private {number} */
   this.canvasWidth_ = window.innerWidth;
@@ -91,12 +91,12 @@ cast.games.superterran.SuperterranGame = function(gameManager) {
   this.BOOST_DECAY_ = 0.05;
 
   /** @private {number} */
-  this.BOOST_RECOVER_ = 0.0025;
+  this.BOOST_RECOVER_ = 0.025;
 
   /** @private {number} */
   this.BULLET_SPEED_ = 40;
   
-  this.WINNING_SCORE_ = 3;
+  this.WINNING_SCORE_ = 20;
   
   this.winningMsg;
 
